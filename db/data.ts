@@ -112,5 +112,20 @@ export const allProducts = [
         status: "approved" as const,
         submittedBy: "emma@example.com",
         voteCount: 145,
-    }, 
+    },
+    {
+        id: 9,
+        name: "LaunchKit",
+        slug: "launchkit",
+        tagline: "Everything you need to launch faster",
+        description:
+            "A toolkit for indie hackers and startups to launch products quickly with templates, analytics, and feedback tools.",
+        websiteUrl: "https://launchkit.dev",
+        tags: ["Startups", "Productivity", "SaaS"],
+        createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+        approvedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // approved 1 days ago
+        status: "approved" as const,
+        submittedBy: "alex@launchkit.dev",
+        voteCount: 187,
+    },
 ]
