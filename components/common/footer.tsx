@@ -1,3 +1,5 @@
+// "use client"
+
 import Link from "next/link"
 import { GithubIcon, MailIcon, SparkleIcon, TwitterIcon } from "lucide-react"
 
@@ -32,7 +34,12 @@ function FooterLink({
 }
 
 export default function Footer() {
-  const year = new Date().getFullYear()
+  // const year = new Date().getFullYear();
+  // const [year, setYear] = useState<number | null>(null)
+
+  // useEffect(() => {
+  //   setYear(new Date().getFullYear())
+  // }, [])
 
   return (
     <footer className="border-t bg-background bg-muted/20">
@@ -115,7 +122,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} iBuiltThis. All rights reserved.</p>
+          <p>© 2026 iBuiltThis. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <Link
               href="/privacy"
