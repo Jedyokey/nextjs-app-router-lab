@@ -34,12 +34,6 @@ function FooterLink({
 }
 
 export default function Footer() {
-  // const year = new Date().getFullYear();
-  // const [year, setYear] = useState<number | null>(null)
-
-  // useEffect(() => {
-  //   setYear(new Date().getFullYear())
-  // }, [])
 
   return (
     <footer className="border-t bg-background bg-muted/20">
