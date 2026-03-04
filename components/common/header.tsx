@@ -3,10 +3,9 @@ import {
     HomeIcon, 
     InfoIcon, 
     SparkleIcon,
-    UserIcon
 } from "lucide-react"
 import Link from "next/link"
-import { Button } from "../ui/button"
+// import { Button } from "../ui/button"
 import { UserAuth } from "../auth/user-auth"
 
 const Logo = () => {
@@ -16,14 +15,14 @@ const Logo = () => {
                 <SparkleIcon className="size-4 text-primary-foreground" /> 
             </div> 
             <span className="text-xl font-bold">
-                i<span className="text-primary">Built</span>This
+                i<span className="text-primary">Build</span>Apps
             </span>
         </Link>
     )
 }
 
 export default function Header() {
-    const isSignedIn = false;
+    // const isSignedIn = false;
 
     return (
         <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
