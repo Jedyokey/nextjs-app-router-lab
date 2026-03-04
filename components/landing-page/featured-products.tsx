@@ -1,5 +1,3 @@
-"use cache";
-
 import { ArrowUpRightIcon, StarIcon } from "lucide-react"
 import SectionHeader from "@/components/common/section-header"
 import { Button } from "@/components/ui/button"
@@ -8,7 +6,11 @@ import Link from "next/link"
 import { getFeaturedProducts } from "@/lib/products/product-select"
 
 export default async function FeaturedProducts() {
-    const featuredProducts = await getFeaturedProducts();
+    const allFeaturedProducts = await getFeaturedProducts();
+    
+    // Limit to top 6 featured products for the landing page
+    const MAX_FEATURED_PRODUCTS = 6;
+    const featuredProducts = allFeaturedProducts.slice(0, MAX_FEATURED_PRODUCTS);
     
     return (
         <section className="py-20 bg-muted/20">

@@ -1,5 +1,3 @@
-// "use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRightIcon, EyeIcon, RocketIcon, SparkleIcon, UsersIcon } from "lucide-react";
@@ -48,7 +46,7 @@ export default function HeroSection() {
                         Share What You&apos;ve Built, Discover What&apos;s Launching
                     </h1>
                     <p className="text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl leading-relaxed">
-                            A community platform for creators to showcase their apps, AI tools, SaaS products, creative projects Authentic launches, real builders, genuine feedback.
+                            A community platform for creators to showcase their apps, AI tools, SaaS products, creative projects. Authentic launches, real builders, genuine feedback.
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 mb-16">
