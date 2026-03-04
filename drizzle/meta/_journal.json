@@ -8,6 +8,27 @@
       "when": 1769951039635,
       "tag": "0000_slow_zombie",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771591429901,
+      "tag": "0001_pretty_morlun",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771593829492,
+      "tag": "0002_add_vote_type_column",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1771604717938,
+      "tag": "0003_remove_vote_type_column",
+      "breakpoints": true
     }
   ]
 }

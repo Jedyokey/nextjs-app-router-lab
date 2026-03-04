@@ -9,6 +9,7 @@ import {
     uniqueIndex,
     index,
 } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 // ============ PRODUCTS ==============
 export const products = pgTable("products", {
@@ -43,3 +44,38 @@ export const products = pgTable("products", {
         organizationIdx: index("products_organization_idx").on(table.organizationId),
     })
 );
+
+// ============ VOTES ==============
+export const votes = pgTable(
+    "votes",
+    {
+        id: serial("id").primaryKey(),
+        productId: integer("product_id").notNull().references(() => products.id, {
+            onDelete: "cascade",
+        }),
+        userId: varchar("user_id", { length: 255 }).notNull(), // Clerk user ID
+        createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    },
+    (table) => ({
+        // Enforce only one vote per user per product
+        uniqueVoteIdx: uniqueIndex("votes_product_user_idx").on(
+            table.productId,
+            table.userId
+        ),
+        // For querying votes by product or user
+        productIdIdx: index("votes_product_id_idx").on(table.productId),
+        userIdIdx: index("votes_user_id_idx").on(table.userId),
+    })
+);
+
+// ============ RELATIONS ==============
+export const productsRelations = relations(products, ({ many }) => ({
+    votes: many(votes),
+}));
+
+export const votesRelations = relations(votes, ({ one }) => ({
+    product: one(products, {
+        fields: [votes.productId],
+        references: [products.id],
+    }),
+}));
