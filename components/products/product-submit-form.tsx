@@ -126,7 +126,7 @@ export default function ProductSubmitForm() {
                 helperText="Comma-separated tags (eg: AI, SaaS, Productivity) to help categorize your product"
             />
 
-            <Button type="submit" size="lg" className="w-full">
+            <Button type="submit" size="lg" className="w-full cursor-pointer">
                {isPending ? (
                     <>
                         <Loader2Icon className="size-4 animate-spin" />
