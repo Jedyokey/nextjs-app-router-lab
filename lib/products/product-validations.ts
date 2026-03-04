@@ -10,11 +10,11 @@ export const productSchema = z.object({
         .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 
             { message: "Slug must be URL-friendly (lowercase letters, numbers, and hyphens only)" }),
     tagline: z.string()
-        .min(3, "Tagline is required")
+        .min(3, { message: "Tagline is required" })
         .max(200, { message: "Tagline must be less than 200 characters" }),
     description: z.string()
-        .max(1000, { message: "Description must be less than 1000 characters" })
-        .optional(),
+        .min(10, { message: "Description is required and must be at least 10 characters" })
+        .max(1000, { message: "Description must be less than 1000 characters" }),
     websiteUrl: z.string()
         .min(1, { message: "Website URL is required" })
         .url({ message: "Invalid URL" }),

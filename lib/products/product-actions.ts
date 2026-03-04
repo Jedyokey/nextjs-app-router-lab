@@ -1,10 +1,11 @@
 "use server";
 
 import { auth, currentUser } from "@clerk/nextjs/server";
-// import { z } from "zod";
 import { db } from "@/db/index";
 import { products } from "@/db/schema";
 import { productSchema } from "./product-validations";
+import { eq, sql } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 type FormState = {
     success: boolean;
@@ -20,12 +21,19 @@ export const addProductAction = async (
     // auth
 
     try {
-        const { userId } = await auth();
+        const { userId, orgId } = await auth();
 
         if (!userId) {
             return {
                 success: false,
                 message: "You must be signed in to submit a product",
+            };
+        };
+
+        if (!orgId) {
+            return {
+                success: false,
+                message: "You must be a member of an organization to submit a product",
             };
         };
 
@@ -59,30 +67,94 @@ export const addProductAction = async (
             websiteUrl,
             tags: tagsArray,
             status: "pending",
-            submittedBy: "",
+            submittedBy: userEmail,
+            organizationId: orgId,
             userId,
         });
-
+        revalidatePath("/"); // Revalidate cache to show new product
         return {
             success: true,
             message: "Product submitted successfully! It will be reviewed shortly.",
         }
 
     } catch (error) {
-        console.error(error);
-
-        // if (error instanceof z.ZodError) {
-        //     return {
-        //         success: false,
-        //         error: error.flatten().fieldErrors,
-        //         message: "Validation failed. Please check your input and try again",
-        //     };
-        // }
-
         return {
             success: false,
             // error: error,
             message: "Failed to submit product",
         };
+    }
+}
+
+export const upvoteProductAction = async (productId: number) => {
+    try {
+        const { userId, orgId } = await auth();
+
+        if (!userId) {
+            return {
+                success: false,
+                message: "You must be signed in to upvote a product",
+            };
+        };
+        if (!orgId) {
+            return {
+                success: false,
+                message: "You must be a member of an organization to submit a product",
+            };
+        };
+
+        await db.update(products)
+            .set({ voteCount: sql`GREATEST(0, vote_count + 1)`,})
+            .where(eq(products.id, productId));
+
+        revalidatePath("/"); // Revalidate the product page
+        
+        return {
+            success: true,
+            message: "Product upvoted successfully!",
+        }
+    } catch (error) {
+        return {
+            success: false,
+            message: "Failed to upvote product",
+            voteCount: 0,
+        }
+    }
+}
+
+export const downvoteProductAction = async (productId: number) => {
+    try {
+        const { userId, orgId } = await auth();
+
+        if (!userId) {
+            return {
+                success: false,
+                message: "You must be signed in to upvote a product",
+            };
+        };
+        if (!orgId) {
+            return {
+                success: false,
+                message: "You must be a member of an organization to submit a product",
+            };
+        };
+
+        await db.update(products)
+            .set({ voteCount: sql`GREATEST(0, vote_count - 1)`,})
+            .where(eq(products.id, productId));
+
+        revalidatePath("/");
+        
+        return {
+            success: true,
+            message: "Product downvoted successfully!",
+        }
+    } catch (error) {
+        console.error(error);
+        return {
+            success: false,
+            message: "Failed to upvote product",
+            voteCount: 0,
+        }
     }
 }
