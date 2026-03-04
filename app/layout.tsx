@@ -4,12 +4,13 @@ import "./globals.css";
 import Header from "@/components/common/header"
 import Footer from "@/components/common/footer"
 import { ClerkProvider } from "@clerk/nextjs"
+import { Toaster } from "@/components/ui/sonner";
 
 // fonts 
 const outfit = Outfit({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "iBuiltThis - Share Your Creations, Discover New Launches",
+  title: "iBuildApps - Share Your Creations, Discover New Launches",
   description: "A community platform for creators to showcase their apps, AI tools, SaaS products, creative projects Authentic launches, real builders, genuine feedback.",
 };
 
@@ -27,6 +28,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <Toaster richColors position="top-center" />
         </body>
       </html>
     </ClerkProvider>
