@@ -1,0 +1,216 @@
+import { Suspense } from "react";
+import { getProductIdsForParams } from "@/lib/products/product-select";
+import { getProductBySlug } from "@/lib/products/product-queries";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeftIcon, ArrowUpRightIcon, Globe, CalendarIcon, UserIcon, StarIcon, AwardIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import VotingButtons from "@/components/products/voting-buttons";
+import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export const generateStaticParams = async () => {
+    const ids = await getProductIdsForParams();
+    return ids.map((id) => ({ slug: id.toString() }));
+}
+
+async function ProductDetails({ slug }: { slug: string }) {
+    const product = await getProductBySlug(slug);
+
+    if (!product) {
+        notFound();
+    }
+
+    const { 
+        name, 
+        description, 
+        tagline,
+        websiteUrl, 
+        tags, 
+        voteCount, 
+        submittedBy, 
+        createdAt,
+        hasVoted,
+        submitterDisplayName
+    } = product;
+
+    // Check if product is featured (100+ votes)
+    const isFeatured = voteCount >= 100;
+
+    const launchDate = createdAt ? new Date(createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    }) : null;
+
+    return (
+        <div className="max-w-5xl mx-auto">
+            {/* Header with title and voting */}
+            <div className="flex justify-between items-start gap-8 mb-12">
+                {/* Title section with featured badge */}
+                <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                        <h1 className="text-4xl md:text-5xl font-bold text-foreground flex items-center gap-2">
+                            <StarIcon className="size-8 text-primary" />
+                            {name}
+                        </h1>
+                        {isFeatured && (
+                            <Badge 
+                                variant="secondary"
+                                className="bg-primary text-primary-foreground py-1 text-sm font-medium"
+                            >
+                                <StarIcon className="size-3.5 mr-1 text-primary-foreground fill-current" />
+                                Featured
+                            </Badge>
+                        )}
+                    </div>
+                    {tagline && (
+                        <p className="text-xl text-muted-foreground">
+                            {tagline}
+                        </p>
+                    )}
+                </div>
+                
+                {/* Voting section with support text */}
+                <div className="flex-shrink-0">
+                    <div className="bg-card border border-border rounded-2xl p-4 flex flex-col items-center gap-3 sticky top-8 w-[100px]">
+                        <VotingButtons 
+                            productId={product.id}
+                            voteCount={voteCount}
+                            hasVoted={hasVoted}
+                        />
+                        <p className="text-xs text-center text-muted-foreground font-medium">
+                            Support this product
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Main content */}
+            <Card className="border border-border bg-card rounded-2xl p-8 md:p-10 space-y-8">
+                {/* Description */}
+                {description && (
+                    <p className="text-base leading-relaxed text-foreground/80 whitespace-pre-wrap">
+                        {description}
+                    </p>
+                )}
+
+                {/* Tags */}
+                {tags && tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {tags.map((tag) => (
+                            <Badge 
+                                key={tag} 
+                                variant="secondary"
+                                className="bg-secondary text-secondary-foreground px-3 py-1 text-xs font-normal"
+                            >
+                                {tag}
+                            </Badge>
+                        ))}
+                    </div>
+                )}
+
+                {/* Divider */}
+                <div className="border-t border-border" />
+
+                {/* Metadata row */}
+                <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
+                    {submittedBy && (
+                        <div className="flex items-center gap-2">
+                            <UserIcon className="size-4" />
+                            <span className="capitalize">{submitterDisplayName}</span>
+                        </div>
+                    )}
+
+                    {launchDate && (
+                        <div className="flex items-center gap-2">
+                            <CalendarIcon className="size-4" />
+                            <span>{launchDate}</span>
+                        </div>
+                    )}
+
+                    <div className="flex items-center gap-2">
+                        <span>{voteCount} votes</span>
+                        {isFeatured && (
+                            <AwardIcon className="size-3.5 text-primary" />
+                        )}
+                    </div>
+
+                    {websiteUrl && (
+                        <Link 
+                            href={websiteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors group ml-auto"
+                        >
+                            <Globe className="size-4" />
+                            <span>Visit website</span>
+                            <ArrowUpRightIcon className="size-3 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        </Link>
+                    )}
+                </div>
+            </Card>
+        </div>
+    );
+}
+
+function ProductSkeleton() {
+    return (
+        <div className="max-w-5xl mx-auto">
+            <div className="flex justify-between items-start gap-8 mb-12">
+                <div className="flex-1 space-y-3">
+                    <div className="flex items-center gap-3">
+                        <Skeleton className="h-12 w-2/3" />
+                        <Skeleton className="h-6 w-20 rounded-full" />
+                    </div>
+                    <Skeleton className="h-6 w-1/2" />
+                </div>
+                <Skeleton className="h-28 w-24 rounded-2xl" />
+            </div>
+
+            <Card className="border border-border bg-card rounded-2xl p-8 md:p-10 space-y-8">
+                <div className="space-y-3">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                </div>
+                <div className="flex gap-2">
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+                <div className="border-t border-border" />
+                <div className="flex flex-wrap items-center gap-6">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-24 ml-auto" />
+                </div>
+            </Card>
+        </div>
+    );
+}
+
+export default async function Product(
+    { params }: { params: Promise<{ slug: string }> }
+) {
+    const { slug } = await params;
+
+    return (
+        <div className="min-h-screen bg-background py-12">
+            <div className="wrapper py-8 px-12">
+                <Link 
+                    href="/explore"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group mb-12"
+                >
+                    <ArrowLeftIcon className="size-4 group-hover:-translate-x-1 transition-transform" />
+                    <span>Back to Explore</span>
+                </Link>
+
+                <Suspense fallback={<ProductSkeleton />}>
+                    <ProductDetails slug={slug} />
+                </Suspense>
+            </div>
+        </div>
+    );
+}
