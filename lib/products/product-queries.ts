@@ -2,6 +2,11 @@ import { db } from "@/db";
 import { products, votes } from "@/db/schema";
 import { desc, eq, and, sql } from "drizzle-orm";
 import { auth, clerkClient } from "@clerk/nextjs/server";
+import { formatUsername } from "@/lib/products/format-utils";
+
+interface UserMetadata {
+    isAdmin?: boolean;
+}
 
 export async function getProductsWithVoteStatus() {
     const { userId } = await auth();
@@ -33,23 +38,30 @@ export async function getProductsWithVoteStatus() {
     return productsData;
 }
 
-// Helper function to format email as fallback
-function formatUsername(email: string | null) {
-    if (!email) return "Community";
-    const username = email.split('@')[0].replace(/[0-9]/g, '');
-    // Try to split camelCase or common separators
-    return username
-        .replace(/([a-z])([A-Z])/g, '$1 $2')
-        .split(/[._-]/)
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ')
-        .trim();
-}
-
-export async function getProductBySlug(slug: string) {
+export async function getProductBySlug(slug: string, adminPreview: boolean = false) {
     const { userId } = await auth();
     
+    // Check if user is admin when adminPreview is enabled
+    let isAdmin = false;
+    if (adminPreview && userId) {
+        try {
+            const client = await clerkClient();
+            const user = await client.users.getUser(userId);
+            const metadata = user.publicMetadata as UserMetadata;
+            isAdmin = metadata?.isAdmin ?? false;
+        } catch (error) {
+            console.error("Error fetching admin status:", error);
+        }
+    }
+    
     // Get the product data
+    const whereCondition = adminPreview && isAdmin 
+        ? eq(products.slug, slug)
+        : and(
+            eq(products.slug, slug),
+            eq(products.status, "approved")
+        );
+    
     const product = await db
         .select({
             id: products.id,
@@ -68,12 +80,7 @@ export async function getProductBySlug(slug: string) {
             organizationId: products.organizationId,
         })
         .from(products)
-        .where(
-            and(
-                eq(products.slug, slug),
-                eq(products.status, "approved")
-            )
-        )
+        .where(whereCondition)
         .limit(1);
 
     if (!product[0]) {
@@ -84,7 +91,7 @@ export async function getProductBySlug(slug: string) {
     let submitterDisplayName = null;
     if (product[0].userId) {
         try {
-            const client = await clerkClient(); // Await the function call
+            const client = await clerkClient();
             const clerkUser = await client.users.getUser(product[0].userId); 
             
             // Combine first and last name if available
@@ -117,7 +124,6 @@ export async function getProductBySlug(slug: string) {
     return {
         ...product[0],
         hasVoted,
-        // Use Clerk name if available, otherwise fallback to formatted email
         submitterDisplayName: submitterDisplayName || formatUsername(product[0].submittedBy),
     };
 }
