@@ -14,8 +14,16 @@ export const generateStaticParams = async () => {
     return ids.map((id) => ({ slug: id.toString() }));
 }
 
-async function ProductDetails({ slug }: { slug: string }) {
-    const product = await getProductBySlug(slug);
+async function ProductDetails({ 
+    slug, 
+    searchParams 
+}: { 
+    slug: string; 
+    searchParams: Promise<{ admin?: string }> 
+}) {
+    const { admin } = await searchParams;
+    const adminPreview = admin === "true";
+    const product = await getProductBySlug(slug, adminPreview);
 
     if (!product) {
         notFound();
@@ -192,7 +200,7 @@ function ProductSkeleton() {
 }
 
 export default async function Product(
-    { params }: { params: Promise<{ slug: string }> }
+    { params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ admin?: string }> }
 ) {
     const { slug } = await params;
 
@@ -208,7 +216,7 @@ export default async function Product(
                 </Link>
 
                 <Suspense fallback={<ProductSkeleton />}>
-                    <ProductDetails slug={slug} />
+                    <ProductDetails slug={slug} searchParams={searchParams} />
                 </Suspense>
             </div>
         </div>
