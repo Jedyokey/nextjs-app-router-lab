@@ -1,12 +1,15 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { TrendingUpIcon, ClockIcon } from "lucide-react"
 import ProductCard from "@/components/products/product-card"
 import { SearchIcon, XIcon } from "lucide-react"
+import ProductExplorerPagination from "@/components/products/product-explorer-pagination"
 import type { ProductFetchItem } from "@/lib/products/product-select"
+
+const ITEMS_PER_PAGE = 6;
 
 export default function ProductExplorer({ 
     products, 
@@ -15,6 +18,7 @@ export default function ProductExplorer({
 }) {
     const [searchQuery, setSearchQuery] = useState("")
     const [sortBy, setSortBy] = useState<"trending" | "recent">("trending")
+    const [currentPage, setCurrentPage] = useState(1)
 
     const filteredProducts = useMemo(() => {
         let filtered = products;
@@ -38,12 +42,33 @@ export default function ProductExplorer({
             filtered = [...filtered].sort((a, b) => {
                 const dateA = new Date(a.createdAt ?? 0).getTime();
                 const dateB = new Date(b.createdAt ?? 0).getTime();
-                return dateB - dateA; // Descending (newest first)
+                return dateB - dateA;
             });
         }
 
         return filtered;
     }, [products, searchQuery, sortBy])
+
+    // Reset to page 1 when search or sort changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, sortBy]);
+
+    // Pagination logic
+    const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+    const paginatedProducts = useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
+        return filteredProducts.slice(startIndex, endIndex);
+    }, [filteredProducts, currentPage]);
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, [currentPage]);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    }
 
     return (
         <div>
@@ -53,7 +78,7 @@ export default function ProductExplorer({
                     <Input 
                         type="text" 
                         placeholder="Search products..." 
-                        className="w-full pl-10"
+                        className="w-full pl-10 pr-10"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -90,13 +115,14 @@ export default function ProductExplorer({
             
             <div className="mb-6">
                 <p className="text-sm text-muted-foreground">
-                    Showing {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
+                    Showing {paginatedProducts.length} of {filteredProducts.length} {filteredProducts.length === 1 ? "product" : "products"}
                     {searchQuery && ` matching "${searchQuery}"`}
                 </p>
             </div>
+
             <div className="grid-wrapper">
-                {filteredProducts.length > 0 ? (
-                    filteredProducts.map((product) => (
+                {paginatedProducts.length > 0 ? (
+                    paginatedProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))
                 ) : (
@@ -105,6 +131,13 @@ export default function ProductExplorer({
                     </div>
                 )}
             </div>
+
+            {/* Pagination */}
+            <ProductExplorerPagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
         </div>
     )
 }

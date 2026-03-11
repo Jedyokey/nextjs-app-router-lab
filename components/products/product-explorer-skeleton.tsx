@@ -49,6 +49,21 @@ export default function ProductExplorerSkeleton() {
                     </Card>
                 ))}
             </div>
+
+            {/* Pagination skeleton */}
+            <div className="flex items-center justify-center gap-2 mt-12">
+                <Skeleton className="h-9 w-9 rounded-md" />
+                <div className="flex items-center gap-1">
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-12 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                </div>
+                <Skeleton className="h-9 w-9 rounded-md" />
+            </div>
         </div>
     )
 }
