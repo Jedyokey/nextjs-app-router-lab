@@ -5,7 +5,6 @@ import {
     SparkleIcon,
 } from "lucide-react"
 import Link from "next/link"
-// import { Button } from "../ui/button"
 import { UserAuth } from "../auth/user-auth"
 
 const Logo = () => {
