@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { SparklesIcon, CompassIcon } from "lucide-react";
+import { ArrowRightIcon, CompassIcon } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 
@@ -29,8 +29,8 @@ export default function CtaSection() {
                             </Button>
                             <Button size="lg" variant="secondary" className="w-full sm:w-auto min-w-48 gap-2" asChild>
                                 <Link href="/submit">
-                                    <SparklesIcon className="size-5" />
-                                    Submit Product
+                                    Submit Product 
+                                    <ArrowRightIcon className="size-5" />
                                 </Link>
                             </Button>
                         </div>
