@@ -228,8 +228,9 @@
     @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
   }
 
+  /* EDIT: Reduced mobile padding from px-12 to px-6 to prevent content squeezing */
   .wrapper {
-    @apply container mx-auto px-12 sm:px-6 md:px-12 lg:px-12;
+    @apply container mx-auto px-6 sm:px-6 md:px-10 lg:px-12;
   }
 
   /* Card hover effect - used across product cards */

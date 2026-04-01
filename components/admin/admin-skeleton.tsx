@@ -47,7 +47,7 @@ export default function AdminSkeleton() {
                 </div>
                 <div className="space-y-4">
                     {Array.from({ length: 2 }).map((_, i) => (
-                        <div key={i} className="flex items-start gap-4 p-4 rounded-xl bg-muted/30 border border-border">
+                        <div key={i} className="flex flex-col md:flex-row md:items-start gap-4 p-4 rounded-xl bg-muted/30 border border-border">
                             <div className="flex-1 space-y-2">
                                 <div className="flex items-center gap-2">
                                     <Skeleton className="h-5 w-48" />
@@ -60,7 +60,7 @@ export default function AdminSkeleton() {
                                     <Skeleton className="h-3 w-20" />
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex gap-2 md:flex-col">
                                 <Skeleton className="h-8 w-8 rounded-md" />
                                 <Skeleton className="h-8 w-8 rounded-md" />
                                 <Skeleton className="h-8 w-8 rounded-md" />

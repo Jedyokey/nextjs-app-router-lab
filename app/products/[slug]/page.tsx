@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import VotingButtons from "@/components/products/voting-buttons";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import ReviewSection from "@/components/products/review-section";
 
 export const generateStaticParams = async () => {
     const ids = await getProductIdsForParams();
@@ -54,10 +55,10 @@ async function ProductDetails({
     return (
         <div className="max-w-5xl mx-auto">
             {/* Header with title and voting */}
-            <div className="flex justify-between items-start gap-8 mb-12">
+            <div className="flex flex-col md:flex-row md:justify-between items-start gap-6 md:gap-8 mb-8 md:mb-12">
                 {/* Title section with featured badge */}
-                <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
+                <div className="flex-1 w-full">
+                    <div className="flex flex-wrap items-center gap-3 mb-3">
                         <h1 className="text-4xl md:text-5xl font-bold text-foreground flex items-center gap-2">
                             <StarIcon className="size-8 text-primary" />
                             {name}
@@ -80,8 +81,8 @@ async function ProductDetails({
                 </div>
                 
                 {/* Voting section with support text */}
-                <div className="flex-shrink-0">
-                    <div className="bg-card border border-border rounded-2xl p-4 flex flex-col items-center gap-3 sticky top-8 w-[100px]">
+                <div className="flex-shrink-0 w-full sm:w-fit md:w-auto mt-4 md:mt-0">
+                    <div className="bg-card border border-border rounded-2xl p-4 flex flex-col items-center justify-center gap-3 md:sticky top-8 w-full sm:w-[120px] md:w-[100px] mx-auto sm:mx-0">
                         <VotingButtons 
                             productId={product.id}
                             voteCount={voteCount}
@@ -95,7 +96,7 @@ async function ProductDetails({
             </div>
 
             {/* Main content */}
-            <Card className="border border-border bg-card rounded-2xl p-8 md:p-10 space-y-8">
+            <Card className="border border-border bg-card rounded-2xl p-6 sm:p-8 md:p-10 space-y-6 sm:space-y-8">
                 {/* Description */}
                 {description && (
                     <p className="text-base leading-relaxed text-foreground/80 whitespace-pre-wrap">
@@ -158,6 +159,9 @@ async function ProductDetails({
                     )}
                 </div>
             </Card>
+
+            {/* Reviews & Comments */}
+            <ReviewSection productId={product.id} />
         </div>
     );
 }
@@ -165,18 +169,18 @@ async function ProductDetails({
 function ProductSkeleton() {
     return (
         <div className="max-w-5xl mx-auto">
-            <div className="flex justify-between items-start gap-8 mb-12">
-                <div className="flex-1 space-y-3">
+            <div className="flex flex-col md:flex-row md:justify-between items-start gap-6 md:gap-8 mb-8 md:mb-12">
+                <div className="flex-1 w-full space-y-3">
                     <div className="flex items-center gap-3">
                         <Skeleton className="h-12 w-2/3" />
                         <Skeleton className="h-6 w-20 rounded-full" />
                     </div>
                     <Skeleton className="h-6 w-1/2" />
                 </div>
-                <Skeleton className="h-28 w-24 rounded-2xl" />
+                <Skeleton className="h-28 w-full sm:w-[120px] md:w-[100px] rounded-2xl mt-4 md:mt-0" />
             </div>
 
-            <Card className="border border-border bg-card rounded-2xl p-8 md:p-10 space-y-8">
+            <Card className="border border-border bg-card rounded-2xl p-6 sm:p-8 md:p-10 space-y-6 sm:space-y-8">
                 <div className="space-y-3">
                     <Skeleton className="h-4 w-full" />
                     <Skeleton className="h-4 w-full" />
@@ -205,11 +209,11 @@ export default async function Product(
     const { slug } = await params;
 
     return (
-        <div className="min-h-screen bg-background py-12">
-            <div className="wrapper py-8 px-12">
+        <div className="min-h-screen bg-background py-6 sm:py-8 lg:py-12">
+            <div className="wrapper py-4 sm:py-8 px-4 sm:px-6 lg:px-12">
                 <Link 
                     href="/explore"
-                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group mb-12"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group mb-8 md:mb-12"
                 >
                     <ArrowLeftIcon className="size-4 group-hover:-translate-x-1 transition-transform" />
                     <span>Back to Explore</span>
