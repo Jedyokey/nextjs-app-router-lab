@@ -70,14 +70,57 @@ export const votes = pgTable(
     })
 );
 
+// ============ REVIEWS ==============
+export const reviews = pgTable("reviews", {
+    id: serial("id").primaryKey(),
+    productId: integer("product_id").notNull().references(() => products.id, {
+        onDelete: "cascade",
+    }),
+    userId: varchar("user_id", { length: 255 }).notNull(), // Clerk user ID
+
+    // Content
+    content: text("content").notNull(),
+    rating: integer("rating"), // 1-5 stars, only on top-level reviews (parentId is null)
+
+    // Threading — self-reference for replies 
+    parentId: integer("parent_id"),
+
+    // @Mentions — stored as array of Clerk user IDs found in content
+    mentions: json("mentions").$type<string[]>(),
+
+    // Timestamps
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+}, (table) => ({
+    productIdIdx: index("reviews_product_id_idx").on(table.productId),
+    userIdIdx: index("reviews_user_id_idx").on(table.userId),
+    parentIdIdx: index("reviews_parent_id_idx").on(table.parentId),
+}));
+
 // ============ RELATIONS ==============
 export const productsRelations = relations(products, ({ many }) => ({
     votes: many(votes),
+    reviews: many(reviews),
 }));
 
 export const votesRelations = relations(votes, ({ one }) => ({
     product: one(products, {
         fields: [votes.productId],
         references: [products.id],
+    }),
+}));
+
+export const reviewsRelations = relations(reviews, ({ one, many }) => ({
+    product: one(products, {
+        fields: [reviews.productId],
+        references: [products.id],
+    }),
+    parent: one(reviews, {
+        fields: [reviews.parentId],
+        references: [reviews.id],
+        relationName: "reviewReplies",
+    }),
+    replies: many(reviews, {
+        relationName: "reviewReplies",
     }),
 }));
