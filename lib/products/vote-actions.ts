@@ -1,10 +1,11 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/db/index";
 import { products, votes } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { checkRateLimit } from "@/lib/security/rate-limit";
 
 type VoteResponse = {
     success: boolean;
@@ -21,6 +22,23 @@ export const toggleVoteAction = async (
 
     if (!userId) {
       return { success: false, message: "You must be signed in to vote" };
+    }
+
+    // Apply rate limit: Max 10 toggles per minute (60 seconds)
+    const rateLimit = checkRateLimit(`toggle_vote_${userId}`, 10, 60);
+    if (!rateLimit.success) {
+        return { success: false, message: rateLimit.message || "Too many requests" };
+    }
+
+    // Verify that the user has a verified email address
+    const client = await clerkClient();
+    const user = await client.users.getUser(userId);
+    const hasVerifiedEmail = user.emailAddresses.some(
+        (email) => email.verification?.status === "verified"
+    );
+
+    if (!hasVerifiedEmail) {
+        return { success: false, message: "Please verify your email address before voting." };
     }
 
     // Get current product
@@ -62,12 +80,13 @@ export const toggleVoteAction = async (
             )
           );
         
-        newVoteCount = product[0].voteCount - 1;
-        
-        await db
+        const [updatedProduct] = await db
           .update(products)
-          .set({ voteCount: newVoteCount })
-          .where(eq(products.id, productId));
+          .set({ voteCount: sql`${products.voteCount} - 1` })
+          .where(eq(products.id, productId))
+          .returning({ voteCount: products.voteCount });
+
+        newVoteCount = updatedProduct.voteCount;
 
         revalidatePath("/");
         revalidatePath(`/products/${productId}`);
@@ -81,12 +100,13 @@ export const toggleVoteAction = async (
         // Add vote
         await db.insert(votes).values({ productId, userId });
         
-        newVoteCount = product[0].voteCount + 1;
-        
-        await db
+        const [updatedProduct] = await db
           .update(products)
-          .set({ voteCount: newVoteCount })
-          .where(eq(products.id, productId));
+          .set({ voteCount: sql`${products.voteCount} + 1` })
+          .where(eq(products.id, productId))
+          .returning({ voteCount: products.voteCount });
+
+        newVoteCount = updatedProduct.voteCount;
 
         revalidatePath("/");
         revalidatePath(`/products/${productId}`);
@@ -118,12 +138,13 @@ export const toggleVoteAction = async (
           )
         );
       
-      newVoteCount = product[0].voteCount - 1;
-      
-      await db
+      const [updatedProduct] = await db
         .update(products)
-        .set({ voteCount: newVoteCount })
-        .where(eq(products.id, productId));
+        .set({ voteCount: sql`${products.voteCount} - 1` })
+        .where(eq(products.id, productId))
+        .returning({ voteCount: products.voteCount });
+
+      newVoteCount = updatedProduct.voteCount;
 
       revalidatePath("/");
       revalidatePath(`/products/${productId}`);

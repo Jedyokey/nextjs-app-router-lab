@@ -44,3 +44,38 @@ function capitalize(str: string) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
+
+export interface MentionData {
+    id: string;
+    name: string;
+    handle: string;
+}
+
+// Replaces @[Name](id) from DB into @Name for the textarea
+export function decodeMentions(text: string): { text: string; mentions: MentionData[] } {
+    const mentions: MentionData[] = [];
+    const decodedText = text.replace(/@\[([^\]]+)\]\(([^)]+)\)/g, (match, name, id) => {
+        const handle = name;
+        // Only add if not already in the array
+        if (!mentions.some(m => m.id === id)) {
+            mentions.push({ handle, name, id });
+        }
+        return `@${handle}`;
+    });
+    return { text: decodedText, mentions };
+}
+
+// Replaces @Name in textarea back into @[Name](id) for the DB
+export function encodeMentions(text: string, mentions: MentionData[]): string {
+    let result = text;
+    // Sort mentions by handle length descending to replace longer handles first to avoid partial matches
+    const sortedMentions = [...mentions].sort((a, b) => b.handle.length - a.handle.length);
+    
+    sortedMentions.forEach(m => {
+        // Escaping handle to ensure it works correctly in RegExp
+        const escapedHandle = m.handle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`@${escapedHandle}\\b`, "g");
+        result = result.replace(regex, `@[${m.name}](${m.id})`);
+    });
+    return result;
+}
