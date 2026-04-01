@@ -54,7 +54,7 @@ export default function Footer() {
                 <span>Contact</span>
               </a>
               <Link
-                href="/products"
+                href="/explore"
                 className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-all"
               >
                 Browse products
@@ -69,7 +69,7 @@ export default function Footer() {
                 <FooterLink href="/">Home</FooterLink>
               </li>
               <li>
-                <FooterLink href="/products">Products</FooterLink>
+                <FooterLink href="/explore">Products</FooterLink>
               </li>
               <li>
                 <FooterLink href="/explore">Explore</FooterLink>
@@ -87,11 +87,11 @@ export default function Footer() {
                 <FooterLink href="/how-it-works">How it works</FooterLink>
               </li>
               <li>
-                <FooterLink href="/products">Featured</FooterLink>
+                <FooterLink href="/explore">Featured</FooterLink>
               </li>
               <li>
                 <a
-                  href="https://github.com"
+                  href="https://github.com/Jedyokey/nextjs-app-router-lab"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -116,7 +116,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t pt-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 iBuiltThis. All rights reserved.</p>
+          <p>© 2026 iBuildApps. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             <Link
               href="/privacy"
