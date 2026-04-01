@@ -62,9 +62,9 @@ export default function AllProductsTable({ products }: { products: Product[] }) 
         }
     };
 
-    const handleToggleFeatured = (productId: number, currentVoteCount: number) => {
+    const handleToggleFeatured = (productId: number) => {
         startTransition(async () => {
-            await toggleFeatured(productId, currentVoteCount);
+            await toggleFeatured(productId);
         });
     };
 
@@ -185,7 +185,7 @@ export default function AllProductsTable({ products }: { products: Product[] }) 
                                                 size="sm" 
                                                 variant="ghost" 
                                                 className="h-8 w-8 p-0 text-primary hover:text-primary/80"
-                                                onClick={() => handleToggleFeatured(product.id, product.voteCount)}
+                                                onClick={() => handleToggleFeatured(product.id)}
                                                 disabled={isPending}
                                                 title={product.voteCount > 100 ? "Remove featured" : "Make featured"}
                                             >

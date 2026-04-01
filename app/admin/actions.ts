@@ -67,7 +67,7 @@ export async function deleteProduct(productId: number) {
     revalidatePath("/admin");
 }
 
-export async function toggleFeatured(productId: number, currentVoteCount: number) {
+export async function toggleFeatured(productId: number) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
@@ -77,8 +77,17 @@ export async function toggleFeatured(productId: number, currentVoteCount: number
 
     if (!isAdmin) throw new Error("Unauthorized");
 
-    // Toggle between 101 (featured) and current vote count
-    const newVoteCount = currentVoteCount > 100 ? 50 : 101;
+    // Fetch actual vote count securely from DB
+    const product = await db
+        .select({ voteCount: products.voteCount })
+        .from(products)
+        .where(eq(products.id, productId))
+        .limit(1);
+
+    if (!product.length) throw new Error("Product not found");
+
+    // Toggle between 101 (featured) and base score
+    const newVoteCount = product[0].voteCount > 100 ? 50 : 101;
 
     await db
         .update(products)
