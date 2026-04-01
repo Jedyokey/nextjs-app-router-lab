@@ -1,6 +1,6 @@
 # iBuildApps
 
-A modern, fast, and fully-featured community-driven platform for discovering, discussing, and launching new products daily—inspired by Product Hunt. 
+A modern, fast, and fully-featured community-driven platform for discovering, discussing, and launching new products daily-inspired by Product Hunt. 
 
 Built with the latest modern web stack including Next.js App Router, React 19, Tailwind CSS v4, and Drizzle ORM.
 
@@ -9,13 +9,15 @@ Built with the latest modern web stack including Next.js App Router, React 19, T
 ### For Users & Makers
 *   **Discover & Explore:** Browse trending and recently launched products via the beautifully designed Explore page.
 *   **Product Submissions:** A seamless flow for makers to submit their own projects, complete with taglines, descriptions, and metadata.
+*   **Social & Threaded Reviews:** A social-media-style threaded review and comment system to discuss products. Features a user-friendly `@mention` system.
+*   **Real-time Synchronization:** Comment synchronization across the platform using background polling with Server Actions.
 *   **Upvoting System:** Engaged users can upvote their favorite tools to push them up the daily leaderboards.
 *   **Authentication & Profiles:** Secure authentication handled by Clerk, including Organization switching and profile management directly from the navigation bar.
-*   **Modern Aesthetics:** Designed with a meticulously crafted `oklch` color scheme, transparent "glass" cards, and smooth micro-animations.
+*   **Modern & Responsive Design:** Fully responsive layout with mobile navigation and a meticulously crafted `oklch` color scheme, transparent "glass" cards, and smooth micro-animations.
 
 ### For Administrators
-*   **Comprehensive Admin Dashboard:** A protected `/admin` route exclusively accessible to users with the `isAdmin` metadata flag.
-*   **Approval Workflow:** Review incoming product submissions. Admins can effortlessly **Approve** or **Reject** products.
+*   **Comprehensive Admin Dashboard:** A protected `/admin` route exclusively accessible to users with the `isAdmin` metadata flag, customized with styled stats cards.
+*   **Approval & Moderation Workflow:** Review incoming product submissions and manage user comments. Admins can effortlessly Approve/Reject products and delete inappropriate comments.
 *   **Detailed Analytics:** View live statistics including Total Products, Active Users, Total Votes, and Pending/Approved/Rejected counts.
 *   **Product Management:** Toggle products as "Featured" (pushing them above the 100-vote threshold), delete inappropriate submissions, and monitor recent platform activity via a synced activity feed.
 
