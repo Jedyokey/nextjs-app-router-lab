@@ -98,7 +98,7 @@ export default function ProductExplorer({
                 <div className="flex gap-2">
                     <Button 
                         variant={sortBy === "trending" ? "default" : "outline"} 
-                        className="hidden sm:flex cursor-pointer"
+                        className="flex cursor-pointer"
                         onClick={() => setSortBy("trending")}
                     >
                         <TrendingUpIcon className="size-4" />Trending
@@ -106,7 +106,7 @@ export default function ProductExplorer({
                     <Button
                         variant={sortBy === "recent" ? "default" : "outline"}
                         onClick={() => setSortBy("recent")}
-                        className="hidden sm:flex cursor-pointer"
+                        className="flex cursor-pointer"
                     >
                         <ClockIcon />Recent
                     </Button>
