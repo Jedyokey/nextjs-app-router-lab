@@ -9,8 +9,7 @@ import {
     StarIcon,
     CheckCircleIcon,
     XCircleIcon,
-    ClockIcon,
-    RotateCcwIcon
+    ClockIcon
 } from "lucide-react";
 import Link from "next/link";
 import { 

@@ -248,7 +248,7 @@ export default function ReviewCard({ review, productId, depth = 0 }: ReviewCardP
 
                 {/* Actions row */}
                 {!isEditing && (
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                         {/* Reply button */}
                         {canReply && (
                             <Button
