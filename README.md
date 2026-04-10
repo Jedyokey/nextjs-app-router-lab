@@ -10,6 +10,7 @@ Built with the latest modern web stack including Next.js App Router, React 19, T
 *   **Discover & Explore:** Browse trending and recently launched products via the beautifully designed Explore page.
 *   **Product Submissions:** A seamless flow for makers to submit their own projects, complete with taglines, descriptions, and metadata.
 *   **Social & Threaded Reviews:** A social-media-style threaded review and comment system to discuss products. Features a user-friendly `@mention` system.
+*   **Notification System:** Seamless hybrid notification engine with a dedicated inbox, instantly alerting users when they are `@mentioned` or when there are global site updates.
 *   **Real-time Synchronization:** Comment synchronization across the platform using background polling with Server Actions.
 *   **Upvoting System:** Engaged users can upvote their favorite tools to push them up the daily leaderboards.
 *   **Authentication & Profiles:** Secure authentication handled by Clerk, including Organization switching and profile management directly from the navigation bar.
@@ -48,6 +49,7 @@ Built with the latest modern web stack including Next.js App Router, React 19, T
 │   ├── admin/           # Secured Admin dashboard and server actions
 │   ├── explore/         # Product discovery page
 │   ├── how-it-works/    # Modular explainer page 
+│   ├── notifications/   # Dedicated user notifications inbox
 │   ├── products/        # Dynamic individual product pages
 │   ├── submit/          # Authenticated product submission flow
 │   ├── globals.css      # Core Tailwind v4 configuration + OKLCH variables
