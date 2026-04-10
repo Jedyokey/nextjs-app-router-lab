@@ -37,7 +37,7 @@ export default function Footer() {
 
   return (
     <footer className="border-t bg-background bg-muted/20">
-      <div className="wrapper px-12 py-12">
+      <div className="wrapper px-4 md:px-6 lg:px-12 py-12">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="space-y-3 md:col-span-2">
             <FooterLogo />

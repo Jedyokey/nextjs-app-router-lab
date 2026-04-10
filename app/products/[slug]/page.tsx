@@ -59,9 +59,9 @@ async function ProductDetails({
                 {/* Title section with featured badge */}
                 <div className="flex-1 w-full">
                     <div className="flex flex-wrap items-center gap-3 mb-3">
-                        <h1 className="text-4xl md:text-5xl font-bold text-foreground flex items-center gap-2">
-                            <StarIcon className="size-8 text-primary" />
-                            {name}
+                        <h1 className="text-3xl md:text-5xl font-bold text-foreground flex items-center gap-2">
+                            <StarIcon className="size-6 md:size-8 text-primary shrink-0" />
+                            <span className="truncate">{name}</span>
                         </h1>
                         {isFeatured && (
                             <Badge 
