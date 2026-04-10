@@ -2,7 +2,7 @@
 
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/db/index";
-import { reviews } from "@/db/schema";
+import { reviews, notifications, products } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { reviewSchema } from "@/lib/products/review-validations";
@@ -72,14 +72,44 @@ export const submitReviewAction = async (
             mentions.push(match[2]); // Clerk user ID
         }
 
-        await db.insert(reviews).values({
+        const [newReview] = await db.insert(reviews).values({
             productId,
             userId,
             content,
             rating: parentId ? null : (rating || null),
             parentId: parentId || null,
             mentions: mentions.length > 0 ? mentions : null,
-        });
+        }).returning({ id: reviews.id });
+
+        if (mentions.length > 0) {
+            // Get product slug to build link
+            const product = await db.select({ slug: products.slug }).from(products).where(eq(products.id, productId)).limit(1);
+            if (product.length > 0) {
+                // Get the current user's name securely
+                const client = await clerkClient();
+                let username = "Someone";
+                try {
+                    const currentUser = await client.users.getUser(userId);
+                    username = currentUser.firstName ? `${currentUser.firstName} ${currentUser.lastName || ""}`.trim() : "Someone";
+                } catch (e) {}
+
+                const link = `/products/${product[0].slug}#review-${newReview.id}`;
+
+                // Map mentions to notification records
+                const notificationValues = [...new Set(mentions)]
+                    .filter(mentionId => mentionId !== userId) // don't notify self
+                    .map(mentionedUser => ({
+                        userId: mentionedUser,
+                        type: "mention",
+                        message: `${username} mentioned you in a comment.`,
+                        link: link,
+                    }));
+
+                if (notificationValues.length > 0) {
+                    await db.insert(notifications).values(notificationValues);
+                }
+            }
+        }
 
         revalidatePath("/", "layout");
         revalidatePath("/products", "layout");

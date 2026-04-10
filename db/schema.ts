@@ -8,6 +8,7 @@ import {
     json,
     uniqueIndex,
     index,
+    boolean,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -95,6 +96,20 @@ export const reviews = pgTable("reviews", {
     productIdIdx: index("reviews_product_id_idx").on(table.productId),
     userIdIdx: index("reviews_user_id_idx").on(table.userId),
     parentIdIdx: index("reviews_parent_id_idx").on(table.parentId),
+}));
+
+// ============ NOTIFICATIONS ==============
+export const notifications = pgTable("notifications", {
+    id: serial("id").primaryKey(),
+    userId: varchar("user_id", { length: 255 }).notNull(), // Clerk user ID receiving the notification
+    type: varchar("type", { length: 50 }).notNull(), // 'mention', 'system', etc.
+    message: text("message").notNull(),
+    link: text("link"), // URL to redirect to when clicked
+    isRead: boolean("is_read").default(false).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+}, (table) => ({
+    userIdIdx: index("notifications_user_id_idx").on(table.userId),
+    isReadIdx: index("notifications_is_read_idx").on(table.isRead),
 }));
 
 // ============ RELATIONS ==============
