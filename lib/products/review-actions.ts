@@ -64,12 +64,22 @@ export const submitReviewAction = async (
             }
         }
 
-        // Parse @mentions from content 
+        // Parse @mentions from content
         const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
-        const mentions: string[] = [];
+        const rawMentions: string[] = [];
         let match;
         while ((match = mentionRegex.exec(content)) !== null) {
-            mentions.push(match[2]); // Clerk user ID
+            rawMentions.push(match[2]); // Clerk user ID
+        }
+
+        // Verify each extracted ID is a real Clerk user before storing
+        const client = await clerkClient();
+        const verifiedMentions: string[] = [];
+        for (const id of [...new Set(rawMentions)]) {
+            try {
+                await client.users.getUser(id);
+                verifiedMentions.push(id);
+            } catch { /* not a real user ID — discard */ }
         }
 
         const [newReview] = await db.insert(reviews).values({
@@ -78,25 +88,23 @@ export const submitReviewAction = async (
             content,
             rating: parentId ? null : (rating || null),
             parentId: parentId || null,
-            mentions: mentions.length > 0 ? mentions : null,
+            mentions: verifiedMentions.length > 0 ? verifiedMentions : null,
         }).returning({ id: reviews.id });
 
-        if (mentions.length > 0) {
+        if (verifiedMentions.length > 0) {
             // Get product slug to build link
             const product = await db.select({ slug: products.slug }).from(products).where(eq(products.id, productId)).limit(1);
             if (product.length > 0) {
-                // Get the current user's name securely
-                const client = await clerkClient();
                 let username = "Someone";
                 try {
                     const currentUser = await client.users.getUser(userId);
                     username = currentUser.firstName ? `${currentUser.firstName} ${currentUser.lastName || ""}`.trim() : "Someone";
-                } catch (e) {}
+                } catch { /* keep default */ }
 
                 const link = `/products/${product[0].slug}#review-${newReview.id}`;
 
-                // Map mentions to notification records
-                const notificationValues = [...new Set(mentions)]
+                // Map verified mentions to notification records
+                const notificationValues = verifiedMentions
                     .filter(mentionId => mentionId !== userId) // don't notify self
                     .map(mentionedUser => ({
                         userId: mentionedUser,
@@ -155,10 +163,11 @@ export const deleteReviewAction = async (
             return { success: false, message: "You can only delete your own comments" };
         }
 
-        // Delete the review (cascade will delete child replies via DB constraint is not set on parentId,
-        // so manually delete replies first)
-        await db.delete(reviews).where(eq(reviews.parentId, reviewId));
-        await db.delete(reviews).where(eq(reviews.id, reviewId));
+        // Delete replies then the review itself atomically
+        await db.transaction(async (tx) => {
+            await tx.delete(reviews).where(eq(reviews.parentId, reviewId));
+            await tx.delete(reviews).where(eq(reviews.id, reviewId));
+        });
 
         revalidatePath("/", "layout");
         revalidatePath("/products", "layout");
@@ -184,6 +193,12 @@ export const editReviewAction = async (
 
         if (!userId) {
             return { success: false, message: "You must be signed in" };
+        }
+
+        // Apply rate limit: Max 10 edits per minute
+        const rateLimit = checkRateLimit(`edit_review_${userId}`, 10, 60);
+        if (!rateLimit.success) {
+            return { success: false, message: rateLimit.message || "Too many requests" };
         }
 
         // Validate

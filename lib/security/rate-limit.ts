@@ -28,8 +28,12 @@ export function checkRateLimit(
     // Retrieve existing entry
     let entry = rateLimitCache.get(identifier);
 
-    // If entry does not exist or has expired, reset it
+    // If entry does not exist or has expired, reset it and prune stale keys
     if (!entry || now > entry.expiresAt) {
+        if (entry) rateLimitCache.delete(identifier);
+        for (const [key, val] of rateLimitCache) {
+            if (now > val.expiresAt) rateLimitCache.delete(key);
+        }
         entry = {
             count: 0,
             expiresAt: now + windowInMs,

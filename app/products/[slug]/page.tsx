@@ -30,21 +30,21 @@ async function ProductDetails({
         notFound();
     }
 
-    const { 
-        name, 
-        description, 
+    const {
+        name,
+        description,
         tagline,
-        websiteUrl, 
-        tags, 
-        voteCount, 
-        submittedBy, 
+        websiteUrl,
+        tags,
+        voteCount,
+        featured,
+        submittedBy,
         createdAt,
         hasVoted,
         submitterDisplayName
     } = product;
 
-    // Check if product is featured (100+ votes)
-    const isFeatured = voteCount >= 100;
+    const isFeatured = featured;
 
     const launchDate = createdAt ? new Date(createdAt).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -145,8 +145,8 @@ async function ProductDetails({
                         )}
                     </div>
 
-                    {websiteUrl && (
-                        <Link 
+                    {websiteUrl && (websiteUrl.startsWith("https://") || websiteUrl.startsWith("http://")) && (
+                        <Link
                             href={websiteUrl}
                             target="_blank"
                             rel="noopener noreferrer"

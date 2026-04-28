@@ -1,11 +1,18 @@
 "use server";
 
-import { clerkClient } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
+import { checkRateLimit } from "@/lib/security/rate-limit";
 
 export async function searchUsersForMention(query: string): Promise<
     { userId: string; name: string; avatar: string | null }[]
 > {
     if (!query || query.length < 2) return [];
+
+    const { userId } = await auth();
+    if (!userId) return [];
+
+    const rateLimit = checkRateLimit(`mention_search_${userId}`, 30, 60);
+    if (!rateLimit.success) return [];
 
     try {
         const client = await clerkClient();

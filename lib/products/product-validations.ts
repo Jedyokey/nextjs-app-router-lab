@@ -17,7 +17,11 @@ export const productSchema = z.object({
         .max(1000, { message: "Description must be less than 1000 characters" }),
     websiteUrl: z.string()
         .min(1, { message: "Website URL is required" })
-        .url({ message: "Invalid URL" }),
+        .url({ message: "Invalid URL" })
+        .refine(
+            (url) => url.startsWith("https://") || url.startsWith("http://"),
+            { message: "URL must start with http:// or https://" }
+        ),
     tags: z.string()
         .transform((val) =>
             val.split(",").map((tag) => tag.trim().toLowerCase()).filter(Boolean)
