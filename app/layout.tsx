@@ -5,6 +5,7 @@ import Header from "@/components/common/header"
 import Footer from "@/components/common/footer"
 import { ClerkProvider } from "@clerk/nextjs"
 import { Toaster } from "@/components/ui/sonner";
+import AIAssistant from "@/components/AIAssistant";
 
 // fonts 
 const outfit = Outfit({ subsets: ["latin"] })
@@ -29,6 +30,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <Toaster richColors position="top-center" />
+          <AIAssistant />
         </body>
       </html>
     </ClerkProvider>
