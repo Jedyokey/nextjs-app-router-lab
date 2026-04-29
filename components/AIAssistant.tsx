@@ -26,9 +26,9 @@ export default function AIAssistant() {
     }, [messages, isLoading]);
 
     useEffect(() => {
-        if (isOpen) {
-            setTimeout(() => inputRef.current?.focus(), 100);
-        }
+        if (!isOpen) return;
+        const timer = setTimeout(() => inputRef.current?.focus(), 100);
+        return () => clearTimeout(timer);
     }, [isOpen]);
 
     // Lock background scroll when panel is open
