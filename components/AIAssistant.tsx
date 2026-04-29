@@ -31,6 +31,18 @@ export default function AIAssistant() {
         }
     }, [isOpen]);
 
+    // Lock background scroll when panel is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [isOpen]);
+
     const sendMessage = async () => {
         const trimmed = input.trim();
         if (!trimmed || isLoading) return;
@@ -72,9 +84,14 @@ export default function AIAssistant() {
         <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-3">
             {/* Chat Panel */}
             {isOpen && (
-                <div className="fixed bottom-[4.5rem] right-4 left-4 sm:left-auto sm:right-6 sm:w-[380px] sm:bottom-[5.5rem] bg-card border border-border rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[520px]">
+                /*
+                 * Mobile: full-screen (inset-0) so the iOS keyboard resize doesn't
+                 * displace the panel. No border-radius or border on mobile edges.
+                 * sm+: fixed bottom-right panel with rounded corners.
+                 */
+                <div className="fixed inset-0 sm:inset-auto sm:bottom-[5.5rem] sm:right-6 sm:w-[380px] sm:max-h-[520px] bg-card border-0 sm:border sm:border-border rounded-none sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden">
                     {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground rounded-t-2xl shrink-0">
+                    <div className="flex items-center justify-between px-4 py-3 bg-primary text-primary-foreground rounded-none sm:rounded-t-2xl shrink-0">
                         <div className="flex items-center gap-2">
                             <div className="size-8 rounded-full bg-primary-foreground/20 flex items-center justify-center">
                                 <SparklesIcon className="size-4" />
@@ -130,8 +147,8 @@ export default function AIAssistant() {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input */}
-                    <div className="shrink-0 border-t border-border p-3 bg-card flex items-center gap-2">
+                    {/* Input — font-size must be ≥16px on mobile to prevent iOS auto-zoom */}
+                    <div className="shrink-0 border-t border-border p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-card flex items-center gap-2">
                         <input
                             ref={inputRef}
                             type="text"
@@ -140,7 +157,7 @@ export default function AIAssistant() {
                             onKeyDown={handleKeyDown}
                             placeholder="Type a message..."
                             disabled={isLoading}
-                            className="flex-1 text-sm bg-background border border-input rounded-lg px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 text-base sm:text-sm bg-background border border-input rounded-lg px-3 py-2 text-foreground placeholder:text-muted-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:border-ring disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                         <button
                             onClick={sendMessage}
@@ -158,10 +175,13 @@ export default function AIAssistant() {
                 </div>
             )}
 
-            {/* Toggle Button */}
+            {/* Toggle Button — hidden on mobile when panel is open (header X handles close) */}
             <button
                 onClick={() => setIsOpen((prev) => !prev)}
-                className="size-14 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center justify-center hover:bg-primary/90 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+                className={cn(
+                    "size-14 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center justify-center hover:bg-primary/90 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer",
+                    isOpen && "hidden sm:flex"
+                )}
                 aria-label={isOpen ? "Close chat" : "Open chat"}
             >
                 {isOpen ? (
