@@ -130,7 +130,7 @@ export default function ReviewForm({
                             rows={isReply ? 2 : 3}
                             maxLength={charLimit}
                             disabled={isPending}
-                            className="w-full px-4 py-3 bg-transparent text-sm text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none disabled:opacity-50"
+                            className="w-full px-4 py-3 bg-transparent text-base sm:text-sm text-foreground placeholder:text-muted-foreground/60 resize-none focus:outline-none disabled:opacity-50"
                         />
 
                         {/* Mention autocomplete dropdown */}

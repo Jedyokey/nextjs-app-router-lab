@@ -84,6 +84,7 @@ export default async function AdminDashboard() {
             submittedBy: products.submittedBy,
             createdAt: products.createdAt,
             voteCount: products.voteCount,
+            featured: products.featured,
             status: products.status,
         })
         .from(products)

@@ -77,22 +77,18 @@ export async function toggleFeatured(productId: number) {
 
     if (!isAdmin) throw new Error("Unauthorized");
 
-    // Fetch actual vote count securely from DB
     const product = await db
-        .select({ voteCount: products.voteCount })
+        .select({ featured: products.featured })
         .from(products)
         .where(eq(products.id, productId))
         .limit(1);
 
     if (!product.length) throw new Error("Product not found");
 
-    // Toggle between 101 (featured) and base score
-    const newVoteCount = product[0].voteCount > 100 ? 50 : 101;
-
     await db
         .update(products)
         .set({
-            voteCount: newVoteCount,
+            featured: !product[0].featured,
             updatedAt: new Date()
         })
         .where(eq(products.id, productId));

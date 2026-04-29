@@ -205,7 +205,7 @@ export default function ReviewCard({ review, productId, depth = 0 }: ReviewCardP
                             onChange={(e) => setEditContent(e.target.value)}
                             rows={2}
                             maxLength={2000}
-                            className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-foreground resize-none focus:outline-none focus:border-primary/50"
+                            className="w-full px-3 py-2 bg-background border border-border rounded-lg text-base sm:text-sm text-foreground resize-none focus:outline-none focus:border-primary/50"
                         />
 
                         <div className="flex items-center gap-1.5">
