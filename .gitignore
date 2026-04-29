@@ -43,3 +43,7 @@ next-env.d.ts
 
 app/_sandbox/
 /types
+
+# Claude.md
+CLAUDE.md
+.claude/
