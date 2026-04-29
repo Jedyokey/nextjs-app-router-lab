@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { reviewSchema } from "@/lib/products/review-validations";
 import { getReviewsByProductId } from "@/lib/products/review-queries";
 import { checkRateLimit } from "@/lib/security/rate-limit";
+import { decodeMentions } from "@/lib/products/format-utils";
 
 type ReviewResponse = {
     success: boolean;
@@ -65,22 +66,15 @@ export const submitReviewAction = async (
         }
 
         // Parse @mentions from content
-        const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
-        const rawMentions: string[] = [];
-        let match;
-        while ((match = mentionRegex.exec(content)) !== null) {
-            rawMentions.push(match[2]); // Clerk user ID
-        }
+        const { mentions: parsedMentions } = decodeMentions(content);
+        const uniqueIds = [...new Set(parsedMentions.map((m) => m.id))];
 
         // Verify each extracted ID is a real Clerk user before storing
         const client = await clerkClient();
-        const verifiedMentions: string[] = [];
-        for (const id of [...new Set(rawMentions)]) {
-            try {
-                await client.users.getUser(id);
-                verifiedMentions.push(id);
-            } catch { /* not a real user ID — discard */ }
-        }
+        const results = await Promise.allSettled(
+            uniqueIds.map((id) => client.users.getUser(id))
+        );
+        const verifiedMentions = uniqueIds.filter((_, i) => results[i].status === "fulfilled");
 
         const [newReview] = await db.insert(reviews).values({
             productId,
@@ -224,12 +218,8 @@ export const editReviewAction = async (
         }
 
         // Re-parse @mentions
-        const mentionRegex = /@\[([^\]]+)\]\(([^)]+)\)/g;
-        const mentions: string[] = [];
-        let match;
-        while ((match = mentionRegex.exec(content)) !== null) {
-            mentions.push(match[2]);
-        }
+        const { mentions: parsedMentions } = decodeMentions(content);
+        const mentions = parsedMentions.map((m) => m.id);
 
         await db
             .update(reviews)
