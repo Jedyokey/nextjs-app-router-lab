@@ -28,6 +28,7 @@ export const products = pgTable("products", {
 
     // Voting
     voteCount: integer("vote_count").notNull().default(0),
+    featured: boolean("featured").notNull().default(false),
 
     // Metadata
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),

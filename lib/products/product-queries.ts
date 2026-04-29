@@ -21,9 +21,10 @@ export async function getProductsWithVoteStatus() {
             websiteUrl: products.websiteUrl,
             tags: products.tags,
             voteCount: products.voteCount,
+            featured: products.featured,
             status: products.status,
             createdAt: products.createdAt,
-            hasVoted: userId 
+            hasVoted: userId
                 ? sql<boolean>`EXISTS(
                     SELECT 1 FROM ${votes} 
                     WHERE ${votes.productId} = ${products.id} 
@@ -72,6 +73,7 @@ export async function getProductBySlug(slug: string, adminPreview: boolean = fal
             websiteUrl: products.websiteUrl,
             tags: products.tags,
             voteCount: products.voteCount,
+            featured: products.featured,
             status: products.status,
             createdAt: products.createdAt,
             approvedAt: products.approvedAt,

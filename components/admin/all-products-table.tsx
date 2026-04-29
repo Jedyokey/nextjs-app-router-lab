@@ -38,6 +38,7 @@ interface Product {
     submittedBy: string | null;
     createdAt: Date | null;
     voteCount: number;
+    featured?: boolean;
     status: string | null;
 }
 
@@ -126,10 +127,10 @@ export default function AllProductsTable({ products }: { products: Product[] }) 
                                     </td>
                                     <td className="py-3 px-4">
                                         <div className="flex items-center gap-1">
-                                            <span className={product.voteCount > 100 ? 'text-primary font-medium' : 'text-muted-foreground'}>
+                                            <span className={product.featured ? 'text-primary font-medium' : 'text-muted-foreground'}>
                                                 {product.voteCount}
                                             </span>
-                                            {product.voteCount > 100 && (
+                                            {product.featured && (
                                                 <StarIcon className="size-3 text-primary fill-primary" />
                                             )}
                                         </div>
@@ -186,9 +187,9 @@ export default function AllProductsTable({ products }: { products: Product[] }) 
                                                 className="h-8 w-8 p-0 text-primary hover:text-primary/80"
                                                 onClick={() => handleToggleFeatured(product.id)}
                                                 disabled={isPending}
-                                                title={product.voteCount > 100 ? "Remove featured" : "Make featured"}
+                                                title={product.featured ? "Remove featured" : "Make featured"}
                                             >
-                                                <StarIcon className={`size-4 ${product.voteCount > 100 ? 'fill-primary' : ''}`} />
+                                                <StarIcon className={`size-4 ${product.featured ? 'fill-primary' : ''}`} />
                                             </Button>
                                             
                                             {/* Delete button for all products */}

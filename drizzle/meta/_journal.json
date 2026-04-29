@@ -29,6 +29,13 @@
       "when": 1771604717938,
       "tag": "0003_remove_vote_type_column",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1777348987973,
+      "tag": "0004_material_monster_badoon",
+      "breakpoints": true
     }
   ]
 }

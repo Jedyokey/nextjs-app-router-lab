@@ -23,6 +23,7 @@ type ProductCardProps = {
         websiteUrl: string | null;
         tags: string[] | null;
         voteCount: number;
+        featured?: boolean | null;
         status: string | null;
         createdAt: Date | null;
         hasVoted: boolean;
@@ -59,7 +60,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                                 <CardTitle className="text-lg group-hover:text-primary transition-colors">
                                     {product.name}
                                 </CardTitle>
-                                {product.voteCount > 100 && (
+                                {product.featured && (
                                     <Badge className="gap-1 bg-primary text-primary-foreground">
                                         <StarIcon className="size-3 fill-current" />
                                         Featured
